@@ -25,42 +25,46 @@ namespace :pm2 do
 
   desc 'List all pm2 applications'
   task :status do
-    run_task :pm2, :list
+    run_task pm2, :list
   end
 
   desc 'Start pm2 application'
   task :start do
-    run_task :pm2, :start, fetch(:pm2_app_command), "--cwd #{current_path} --name #{app_name} #{fetch(:pm2_start_params)}"
+    run_task pm2, :start, fetch(:pm2_app_command), "--cwd #{current_path} --name #{app_name} #{fetch(:pm2_start_params)}"
   end
 
   desc 'Stop pm2 application'
   task :stop do
-    run_task :pm2, :stop, app_name
+    run_task pm2, :stop, app_name
   end
 
   desc 'Delete pm2 application'
   task :delete do
-    run_task :pm2, :delete, app_name
+    run_task pm2, :delete, app_name
   end
 
   desc 'Show pm2 application info'
   task :list do
-    run_task :pm2, :show, app_name
+    run_task pm2, :show, app_name
   end
 
   desc 'Watch pm2 logs'
   task :logs do
-    run_task :pm2, :logs
+    run_task pm2, :logs
   end
 
   desc 'Save pm2 state so it can be loaded after restart'
   task :save do
-    run_task :pm2, :save
+    run_task pm2, :save
   end
 
   desc 'Install pm2 via npm on the remote host'
   task :setup do
     run_task :npm, :install,  'pm2 -g'
+  end
+
+  def pm2
+    fetch(:pm2_cmd) || :pm2
   end
 
   def app_name
@@ -70,7 +74,7 @@ namespace :pm2 do
   def app_status
     within release_path do
       with fetch(:pm2_env_variables) do
-        ps = JSON.parse(capture :pm2, :jlist, :'-s')
+        ps = JSON.parse(capture pm2, :jlist, :'-s')
 
         # find the process with our app name
         ps.each do |child|
@@ -88,7 +92,7 @@ namespace :pm2 do
   def restart_app
     within release_path do
       with fetch(:pm2_env_variables) do
-        execute :pm2, :restart, app_name
+        execute pm2, :restart, app_name
       end
     end
   end
